@@ -21,10 +21,15 @@ fun MenuScreen(onSearchClick: () -> Unit, onFavoriteClick: () -> Unit) {
             TopAppBar(onSearchClick = onSearchClick, onFavoriteClick = onFavoriteClick)
         }
     ) { innerPadding ->
-
     }
 }
 
+/**
+ * Main top app bar composable:
+ * - Displays the app title and action icons for search and favorites.
+ * - Invokes onSearchClick when the search icon is clicked.
+ * - Invokes onFavoriteClick when the favorite icon is clicked.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(onSearchClick: () -> Unit, onFavoriteClick: () -> Unit) {
