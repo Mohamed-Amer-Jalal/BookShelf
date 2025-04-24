@@ -1,0 +1,52 @@
+package com.example.bookshelf.screens.menuScreen
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.bookshelf.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MenuScreen(onSearchClick: () -> Unit, onFavoriteClick: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                actions = {
+                    IconButton(onClick = onSearchClick) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search)
+                        )
+                    }
+                    IconButton(onClick = onFavoriteClick) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = stringResource(R.string.favorite)
+                        )
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+
+    }
+}
+
+@Preview
+@Composable
+fun MenuScreenPreview() {
+    MenuScreen(
+        onSearchClick = {},
+        onFavoriteClick = {}
+    )
+}
