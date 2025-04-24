@@ -14,32 +14,37 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.bookshelf.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(onSearchClick: () -> Unit, onFavoriteClick: () -> Unit) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
-                actions = {
-                    IconButton(onClick = onSearchClick) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(R.string.search)
-                        )
-                    }
-                    IconButton(onClick = onFavoriteClick) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = stringResource(R.string.favorite)
-                        )
-                    }
-                }
-            )
+            TopAppBar(onSearchClick = onSearchClick, onFavoriteClick = onFavoriteClick)
         }
     ) { innerPadding ->
 
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar(onSearchClick: () -> Unit, onFavoriteClick: () -> Unit) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.app_name)) },
+        actions = {
+            IconButton(onClick = onSearchClick) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search)
+                )
+            }
+            IconButton(onClick = onFavoriteClick) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = stringResource(R.string.favorite)
+                )
+            }
+        }
+    )
 }
 
 @Preview
