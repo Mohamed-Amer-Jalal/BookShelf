@@ -1,10 +1,11 @@
 package com.example.bookshelf.screens.queryScreen
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class QueryViewModel {
+class QueryViewModel : ViewModel() {
     /*private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
     val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()*/
 

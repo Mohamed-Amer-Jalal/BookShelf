@@ -18,15 +18,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookshelf.R
 
 @Composable
-fun QueryScreen(query: String, onQueryChange: (String) -> Unit) {
+fun QueryScreen(query: String, viewModel: QueryViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
         value = query,
-        onValueChange = onQueryChange,
+        onValueChange = { viewModel.updateQuery(it) },
         placeholder = { Text(stringResource(R.string.search)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
@@ -62,7 +63,6 @@ fun QueryScreen(query: String, onQueryChange: (String) -> Unit) {
 @Composable
 fun QueryScreenPreview() {
     QueryScreen(
-        query = "",
-        onQueryChange = {}
+        query = ""
     )
 }
