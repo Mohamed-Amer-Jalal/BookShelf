@@ -63,4 +63,18 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.core.jvm)
     implementation(libs.kotlin.stdlib.jdk8)
+    // Retrofit
+    implementation(libs.retrofit)
+
+    // Gson converter (for JSON)
+    implementation(libs.converter.gson)
+
+    // OkHttp (Retrofit's networking layer) - Often already included transitively
+    implementation(libs.okhttp)
+
+    //Optional dependency for logging
+    implementation(libs.logging.interceptor)
+
+    // Optional dependency for Kotlinx Serialization
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
 }
