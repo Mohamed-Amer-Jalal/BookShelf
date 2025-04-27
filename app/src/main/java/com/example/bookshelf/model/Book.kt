@@ -9,8 +9,7 @@ data class Book(
     val volumeInfo: VolumeInfo? = null,
     val saleInfo: SaleInfo? = null
 ) {
-    val price: String
-        get() = saleInfo?.priceDisplay.orEmpty()
+    val price: String get() = saleInfo?.priceDisplay.orEmpty()
 }
 
 @Serializable
