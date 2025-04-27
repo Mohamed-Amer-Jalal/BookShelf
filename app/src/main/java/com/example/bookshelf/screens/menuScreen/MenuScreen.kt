@@ -50,7 +50,7 @@ fun MainTopAppBar(
     TopAppBar(
         title = {
             when (isSearchActive) {
-                true -> QueryScreen(query = query, onQueryChange = onQueryChange)
+                true -> QueryScreen(query = query)
 
                 false -> Text(stringResource(R.string.app_name))
             }

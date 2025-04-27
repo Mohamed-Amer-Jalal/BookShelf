@@ -77,4 +77,7 @@ dependencies {
 
     // Optional dependency for Kotlinx Serialization
     implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 }
