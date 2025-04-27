@@ -9,9 +9,8 @@ sealed interface QueryUiState {
     object Loading : QueryUiState
 }
 
-fun NetworkResult<List<Book>>.toUiState(): QueryUiState =
-    when (this) {
-        NetworkResult.Loading -> QueryUiState.Loading
-        is NetworkResult.Success -> QueryUiState.Success(data)
-        is NetworkResult.Error -> QueryUiState.Error
-    }
+fun NetworkResult<List<Book>>.toQueryUiState(): QueryUiState = when (this) {
+    NetworkResult.Loading -> QueryUiState.Loading
+    is NetworkResult.Success -> QueryUiState.Success(data)
+    is NetworkResult.Error -> QueryUiState.Error
+}

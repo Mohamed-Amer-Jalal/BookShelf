@@ -7,15 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bookshelf.data.BookshelfRepository
-import com.example.bookshelf.data.safeApiCall
 import com.example.bookshelf.model.Book
-import com.example.bookshelf.model.QueryResponse
-import com.example.bookshelf.network.BookshelfApiService
-import com.example.bookshelf.screens.components.NetworkResult
-import com.example.bookshelf.screens.queryScreen.toUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,23 +17,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
 class QueryViewModel(
-    private val bookshelfRepository: BookshelfRepository,
-    private val bookshelfApiService: BookshelfApiService
+    private val bookshelfRepository: BookshelfRepository
 ) : ViewModel() {
-
-//    private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
-//    val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
-//
-//    private val _uiStateSearch = MutableStateFlow(SearchUiState())
-//    val uiStateSearch: StateFlow<SearchUiState> = _uiStateSearch.asStateFlow()
-
     // Logic for Favorite books -- Beg
     private val _favoriteBooks = mutableStateListOf<Book>()
     val favoriteBooks: List<Book> = _favoriteBooks
@@ -71,46 +55,25 @@ class QueryViewModel(
     }
     // Logic for Favorite books -- End
 
-/*    fun updateQuery(query: String) {
-        _uiStateSearch.value = _uiStateSearch.value.copy(query = query)
-    }
-
-    private fun updateSearchStarted(searchStarted: Boolean) {
-        _uiStateSearch.value = _uiStateSearch.value.copy(searchStarted = searchStarted)
-    }
-
-    fun getBooks(query: String = "") {
-        updateSearchStarted(true)
-        viewModelScope.launch {
-
-        }
-    }*/
-
-    // 1. دفق mutable لحقل النص الذي يكتبه المستخدم
+    // 1. دفق داخلي mutable لحقل النص
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
 
-    // 2. تحديث الاستعلام من الواجهة
+    // 2. استدعاء من الواجهة
     fun updateQuery(newQuery: String) {
         _query.value = newQuery
     }
 
-    // 3. تدفق لحالة الواجهة مشتق من تدفق الاستعلام
+    // 3. دفق لحالة الواجهة مشتق من _query
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<QueryUiState> = _query
-        .debounce(300)                               // تأخير لضغط الطلبات أثناء الكتابة
-        .distinctUntilChanged()                      // تجاهل نفس النص المتكرر
-        .flatMapLatest { q ->                         // إلغاء أي طلب جاري وبناء دفق جديد
-            flow {
-                // استدعاء المستودع آمنًا
-                val result = safeApiCall { bookshelfApiService.getBooks(q) }
-                // حوّل النتائج إلى حالة واجهة
-                emit(result.toUiState())
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = QueryUiState.Loading
-        )
+    val uiState: StateFlow<QueryUiState> =
+        _query.debounce(300)                       // تأخير لضغط الطلبات
+            .distinctUntilChanged()              // تجاهل نفس النص
+            .flatMapLatest { q ->
+                bookshelfRepository.searchBooksFlow(q)
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = QueryUiState.Loading
+            )
 }
