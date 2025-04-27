@@ -11,7 +11,7 @@ sealed interface QueryUiState {
 
 fun NetworkResult<List<Book>>.toUiState(): QueryUiState =
     when (this) {
-        NetworkResult.Loading      -> QueryUiState.Loading
-        is NetworkResult.Success   -> QueryUiState.Success(data)
-        is NetworkResult.Error     -> QueryUiState.Error
+        NetworkResult.Loading -> QueryUiState.Loading
+        is NetworkResult.Success -> QueryUiState.Success(data)
+        is NetworkResult.Error -> QueryUiState.Error
     }

@@ -10,7 +10,9 @@ import com.example.bookshelf.data.BookshelfRepository
 import com.example.bookshelf.data.safeApiCall
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.model.QueryResponse
+import com.example.bookshelf.network.BookshelfApiService
 import com.example.bookshelf.screens.components.NetworkResult
+import com.example.bookshelf.screens.queryScreen.toUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -28,13 +30,15 @@ import kotlinx.coroutines.launch
 
 
 class QueryViewModel(
-    private val bookshelfRepository: BookshelfRepository
+    private val bookshelfRepository: BookshelfRepository,
+    private val bookshelfApiService: BookshelfApiService
 ) : ViewModel() {
+
 //    private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
 //    val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
-
-    private val _uiStateSearch = MutableStateFlow(SearchUiState())
-    val uiStateSearch: StateFlow<SearchUiState> = _uiStateSearch.asStateFlow()
+//
+//    private val _uiStateSearch = MutableStateFlow(SearchUiState())
+//    val uiStateSearch: StateFlow<SearchUiState> = _uiStateSearch.asStateFlow()
 
     // Logic for Favorite books -- Beg
     private val _favoriteBooks = mutableStateListOf<Book>()
@@ -67,9 +71,9 @@ class QueryViewModel(
     }
     // Logic for Favorite books -- End
 
-//    fun updateQuery(query: String) {
-//        _uiStateSearch.value = _uiStateSearch.value.copy(query = query)
-//    }
+/*    fun updateQuery(query: String) {
+        _uiStateSearch.value = _uiStateSearch.value.copy(query = query)
+    }
 
     private fun updateSearchStarted(searchStarted: Boolean) {
         _uiStateSearch.value = _uiStateSearch.value.copy(searchStarted = searchStarted)
@@ -80,46 +84,33 @@ class QueryViewModel(
         viewModelScope.launch {
 
         }
-    }
+    }*/
 
+    // 1. دفق mutable لحقل النص الذي يكتبه المستخدم
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
 
+    // 2. تحديث الاستعلام من الواجهة
     fun updateQuery(newQuery: String) {
         _query.value = newQuery
     }
 
+    // 3. تدفق لحالة الواجهة مشتق من تدفق الاستعلام
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<QueryUiState> = _query
-        .debounce(500)
-        .distinctUntilChanged()
-        .flatMapLatest { searchResultsFlow(it) }  // → Flow<NetworkResult<List<Book>>>
-        .map { it.toUiState() }                   // now `it` is NetworkResult<List<Book>>
-        .stateIn(viewModelScope, SharingStarted.Lazily, QueryUiState.Loading)
-
-    private fun searchResultsFlow(query: String): Flow<NetworkResult<List<Book>>> = flow {
-        emit(NetworkResult.Loading) // قبل طلب الشبكة
-
-        // 1. اطلب الاستجابة الأصلية من الـ API (فقط الـ Retrofit call)
-        val apiResult: NetworkResult<QueryResponse> = safeApiCall {
-            bookshelfRepository.getBooks(query)
-        }
-
-        // 2. حرّكها إلى NetworkResult<List<Book>>
-        val listResult: NetworkResult<List<Book>> = when (apiResult) {
-            is NetworkResult.Success -> {
-                // apiResult.data هو QueryResponse
-                NetworkResult.Success(apiResult.data.items.orEmpty())
-            }
-            is NetworkResult.Error -> {
-                NetworkResult.Error(apiResult.exception)
-            }
-            NetworkResult.Loading -> {
-                NetworkResult.Loading
+        .debounce(300)                               // تأخير لضغط الطلبات أثناء الكتابة
+        .distinctUntilChanged()                      // تجاهل نفس النص المتكرر
+        .flatMapLatest { q ->                         // إلغاء أي طلب جاري وبناء دفق جديد
+            flow {
+                // استدعاء المستودع آمنًا
+                val result = safeApiCall { bookshelfApiService.getBooks(q) }
+                // حوّل النتائج إلى حالة واجهة
+                emit(result.toUiState())
             }
         }
-
-        // 3. أطلق النتيجة النهائية
-        emit(listResult)
-    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = QueryUiState.Loading
+        )
 }
