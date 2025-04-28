@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class Book(
     val id: String? = "",
     val description: String? = "",
-    val volumeInfo: VolumeInfo? = null,
+    val volumeInfo: VolumeInfo,
     val saleInfo: SaleInfo? = null
 ) {
     val price: String get() = saleInfo?.priceDisplay.orEmpty()
@@ -14,10 +14,10 @@ data class Book(
 
 @Serializable
 data class VolumeInfo(
-    val title: String? = "",
-    val subtitle: String? = "",
+    val title: String = "",
+    val subtitle: String = "",
     val description: String? = "",
-    val imageLinks: ImageLinks? = null,
+    val imageLinks: ImageLinks,
     val authors: List<String>? = emptyList(),
     val publisher: String? = "",
     val publishedDate: String? = ""

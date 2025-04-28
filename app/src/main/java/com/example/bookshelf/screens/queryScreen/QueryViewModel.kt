@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
-
 class QueryViewModel(
     private val bookshelfRepository: BookshelfRepository
 ) : ViewModel() {
@@ -30,7 +29,7 @@ class QueryViewModel(
     // 1. المصدر الوحيد للحقيقة لقائمة المفضلات
     private val _favoriteBooks = mutableStateListOf<Book>()
 
-    // إذا احتجتِ عرض القائمة، استعملي هذا
+    // إذا احتجتِ عرض القائمة، استعمل هذا
     val favoriteBooks: List<Book> get() = _favoriteBooks
 
     // 2. حالة الواجهة مُشتقة مباشرةً
@@ -49,6 +48,7 @@ class QueryViewModel(
         else _favoriteBooks += book
     }
     // Logic for Favorite books -- End
+
 
     // 1. دفق داخلي mutable لحقل النص
     private val _query = MutableStateFlow("")

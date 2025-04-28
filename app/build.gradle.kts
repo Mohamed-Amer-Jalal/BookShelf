@@ -80,4 +80,7 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+
+    // مكتبة Coil الأساسية
+    implementation(libs.coil.compose)
 }

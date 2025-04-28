@@ -12,4 +12,6 @@
     <string name="expand_button">Expand Button</string>
     <string name="failed_to_load">Failed to load!!!</string>
     <string name="try_again">Try again</string>
+    <string name="image_of_book">Image of book</string>
+    <string name="error_loading_image">Error loading image</string>
 </resources>

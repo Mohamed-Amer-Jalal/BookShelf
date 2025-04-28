@@ -23,8 +23,7 @@ class DefaultBookshelfRepository(
         safeApiCall(
             apiCall = { api.getBook(id) },
             mapper = { it }       // هنا الـ Response مباشرةً هو Book
-        )
-            .getOrNull()
+        ).getOrNull()
 
     // التنفيذ الجديد لـ searchBooksFlow
     override fun searchBooksFlow(query: String): Flow<QueryUiState> =
