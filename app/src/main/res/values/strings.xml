@@ -15,4 +15,9 @@
     <string name="image_of_book">Image of book</string>
     <string name="error_loading_image">Error loading image</string>
     <string name="nothing_found_try_a_different_search">Nothing found. Try a different search.</string>
+    <string name="description">"description: "</string>
+    <string name="listprice">"listPrice: "</string>
+    <string name="country">"country: "</string>
+    <string name="title">"Title: "</string>
+    <string name="no_favorite_books">No Favorite Books.</string>
 </resources>
