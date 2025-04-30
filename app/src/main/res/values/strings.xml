@@ -14,4 +14,5 @@
     <string name="try_again">Try again</string>
     <string name="image_of_book">Image of book</string>
     <string name="error_loading_image">Error loading image</string>
+    <string name="nothing_found_try_a_different_search">Nothing found. Try a different search.</string>
 </resources>

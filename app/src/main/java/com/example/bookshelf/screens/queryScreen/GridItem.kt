@@ -1,13 +1,10 @@
 package com.example.bookshelf.screens.queryScreen
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,13 +12,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -36,36 +30,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bookshelf.R
 import com.example.bookshelf.model.Book
+import com.example.bookshelf.screens.components.NothingFoundScreen
 
 @Composable
 fun GridList(
-    modifier: Modifier = Modifier,
-    viewModel: QueryViewModel = viewModel(),
+    viewModel: QueryViewModel,
     bookshelfList: List<Book>,
-    onBookClick: (Book) -> Unit,
+    modifier: Modifier = Modifier,
+    onDetailsClick: (Book) -> Unit,
     contentPadding: PaddingValues = PaddingValues(24.dp)
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(150.dp),
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        contentPadding = contentPadding
-    ) {
-        items(bookshelfList) { book ->
-            GridItem(
-                viewModel = viewModel,
-                book = book,
-                onBookClick = onBookClick,
-            )
+    if (bookshelfList.isEmpty()) NothingFoundScreen()
+    else {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(150.dp),
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            contentPadding = contentPadding
+        ) {
+            items(bookshelfList) { book ->
+                GridItem(
+                    viewModel = viewModel,
+                    book = book,
+                    onDetailsClick = onDetailsClick,
+                )
+            }
         }
     }
 }
@@ -74,42 +70,53 @@ fun GridList(
 private fun GridItem(
     viewModel: QueryViewModel,
     book: Book,
-    onBookClick: (Book) -> Unit,
+    onDetailsClick: (Book) -> Unit,
 ) {
-    // حالة التوسع والتمييز كـ mutable state
     var expanded by remember { mutableStateOf(false) }
-    // استخدام متغير favorite يتم تحديثه بناءً على حالة الكتاب في قائمة المفضلة
     var favorite by remember { mutableStateOf(viewModel.isBookFavorite(book)) }
 
-    // تسجيل حجم المفضلة لمراقبة التغييرات
-    Log.d(TAG, "عدد الكتب المفضلة: ${viewModel.favoriteBooks.size}")
-
     Card(
-        onClick = { onBookClick(book) },
+        onClick = { onDetailsClick(book) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .animateContentSize(),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.elevatedCardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(18.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // عرض صورة الغلاف للكتاب
-            BookCover(book = book)
+            AsyncImage(
+                modifier = Modifier
+                    .aspectRatio(.6f),
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(book.volumeInfo.imageLinks?.thumbnail)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = stringResource(R.string.image_of_book),
+                error = painterResource(id = R.drawable.ic_broken_image),
+                placeholder = painterResource(id = R.drawable.loading_img),
+                contentScale = ContentScale.FillBounds
+            )
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                FavoriteButton(isFavorite = favorite, onFavoriteClick = {
-                    viewModel.toggleFavorite(book)
-                    favorite = viewModel.isBookFavorite(book)
-                })
-                ExpandButton(onExpandToggle = { expanded = !expanded }, isExpanded = expanded)
+                FavoriteButton(
+                    isFavorite = favorite,
+                    onFavoriteClick = {
+                        if (favorite) viewModel.removeFavoriteBook(book)
+                        else viewModel.addFavoriteBook(book)
+                        favorite = !favorite
+                    },
+                )
+                ExpandButton(
+                    onClick = { expanded = !expanded },
+                    expanded = expanded
+                )
             }
             if (expanded) {
                 Column {
@@ -136,63 +143,25 @@ private fun GridItem(
 }
 
 @Composable
-fun BookCover(book: Book) {
-    SubcomposeAsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(book.volumeInfo.imageLinks.thumbnail)
-            .crossfade(true)
-            .build(),
-        contentDescription = stringResource(R.string.image_of_book),
-        contentScale = ContentScale.FillBounds,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        when (painter.state) {
-            is AsyncImagePainter.State.Loading -> {
-                Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is AsyncImagePainter.State.Error -> {
-                Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.BrokenImage,
-                        contentDescription = stringResource(R.string.error_loading_image)
-                    )
-                }
-            }
-
-            else -> SubcomposeAsyncImageContent()
-        }
-    }
-}
-
-@Composable
 fun FavoriteButton(isFavorite: Boolean, onFavoriteClick: () -> Unit) {
     IconToggleButton(
         checked = isFavorite,
-        onCheckedChange = { onFavoriteClick }
+        onCheckedChange = { onFavoriteClick() }
     ) {
         Icon(
-            Icons.Default.Favorite,
+            imageVector = Icons.Default.Favorite,
             contentDescription = stringResource(R.string.favorite_button),
-            tint = when (isFavorite) {
-                true -> MaterialTheme.colorScheme.primary
-                false -> MaterialTheme.colorScheme.onSurfaceVariant
-            }
+            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
 @Composable
-fun ExpandButton(onExpandToggle: () -> Unit, isExpanded: Boolean) {
-    IconButton(onClick = { onExpandToggle }) {
+fun ExpandButton(onClick: () -> Unit, expanded: Boolean) {
+    IconButton(onClick = onClick) {
         Icon(
-            imageVector = when (isExpanded) {
-                true -> Icons.Default.ExpandLess
-                false -> Icons.Default.ExpandMore
-            },
-            contentDescription = stringResource(R.string.expand_button)
+            imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = stringResource(R.string.expand_button) // Providing proper content description
         )
     }
 }

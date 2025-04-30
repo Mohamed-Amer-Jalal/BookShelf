@@ -1,13 +1,10 @@
 package com.example.bookshelf.screens.menuScreen
 
-import android.R.attr.padding
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,12 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bookshelf.R
-import com.example.bookshelf.model.Book
+import com.example.bookshelf.screens.components.ErrorScreen
+import com.example.bookshelf.screens.components.LoadingScreen
 import com.example.bookshelf.screens.queryScreen.GridList
 import com.example.bookshelf.screens.queryScreen.QueryScreen
 import com.example.bookshelf.screens.queryScreen.QueryUiState
@@ -33,30 +31,42 @@ import com.example.bookshelf.screens.queryScreen.QueryViewModel
 
 @Composable
 fun MenuScreen(
-    viewModel: QueryViewModel = viewModel(factory = QueryViewModel.Factory),
-    onBookClick: (Book) -> Unit
+    modifier: Modifier = Modifier,
+    viewModel: QueryViewModel = viewModel(factory = QueryViewModel.Factory)
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
+    val uiState = viewModel.uiState.collectAsState().value
+
     Scaffold(
         topBar = {
             MainTopAppBar(
                 isSearchActive = isSearchActive,
-                query = viewModel.query.value,
-                onQueryChange = viewModel::updateQuery,
-                onSearchToggle = { isSearchActive = !isSearchActive },
-                onFavoriteToggle = { /*TODO*/ }
+                onSearchClick = { isSearchActive = !isSearchActive },
+                onFavoriteClick = { /* Handle favorite toggle */ },
+                viewModel = viewModel
             )
         }
     ) { innerPadding ->
-        GridList(
-            contentPadding = innerPadding,
-            viewModel = viewModel,
-            modifier = TODO(),
-            bookshelfList = TODO(),
-            onBookClick = TODO()
-        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        when (uiState) {
+            is QueryUiState.Loading -> LoadingScreen()
+
+            is QueryUiState.Success -> {
+                GridList(
+                    contentPadding = innerPadding,
+                    viewModel = viewModel,
+                    bookshelfList = uiState.bookshelfList,
+                    modifier = modifier,
+                    onDetailsClick = { viewModel.selectedBookId = it.id }
+                )
+            }
+
+            is QueryUiState.Error -> ErrorScreen(retryAction = { viewModel.getBooks() })
+        }
     }
 }
+
 
 /**
  * Main top app bar composable:
@@ -68,32 +78,27 @@ fun MenuScreen(
 @Composable
 fun MainTopAppBar(
     isSearchActive: Boolean,
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onSearchToggle: () -> Unit,
-    onFavoriteToggle: () -> Unit
+    onSearchClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    viewModel: QueryViewModel
 ) {
     TopAppBar(
         title = {
-            when (isSearchActive) {
-                true -> QueryScreen(
-                    query = query,
-                    onQueryChange = onQueryChange,
-                    viewModel = TODO(),
-                    onDetailsClick = TODO()
+            if (isSearchActive) {
+                // عرض حقل البحث عندما يكون البحث مفعلًا
+                QueryScreen(
+                    viewModel = viewModel,
                 )
-
-                false -> Text(stringResource(R.string.app_name))
-            }
+            } else Text(stringResource(R.string.app_name))
         },
         actions = {
-            IconButton(onClick = onSearchToggle) {
+            IconButton(onClick = onSearchClick) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = stringResource(R.string.search)
                 )
             }
-            IconButton(onClick = onFavoriteToggle) {
+            IconButton(onClick = onFavoriteClick) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = stringResource(R.string.favorite)

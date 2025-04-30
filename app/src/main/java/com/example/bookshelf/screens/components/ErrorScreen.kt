@@ -3,6 +3,7 @@ package com.example.bookshelf.screens.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WifiTetheringErrorRounded
@@ -31,12 +32,19 @@ fun ErrorScreen(
     ) {
         Icon(
             imageVector = Icons.Default.WifiTetheringErrorRounded,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.failed_to_load),
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.error
         )
-        Text(stringResource(R.string.failed_to_load), fontWeight = FontWeight.Bold)
-        Button(onClick = retryAction) { Text(stringResource(R.string.try_again)) }
+        Text(
+            text = stringResource(R.string.failed_to_load),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Button(onClick = retryAction, modifier = Modifier.padding(top = 16.dp)) {
+            Text(stringResource(R.string.try_again))
+        }
     }
 }
 

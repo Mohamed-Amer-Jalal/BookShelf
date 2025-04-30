@@ -1,8 +1,8 @@
 package com.example.bookshelf.screens.queryScreen
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,66 +11,103 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf.BookshelfApplication
 import com.example.bookshelf.data.BookshelfRepository
 import com.example.bookshelf.model.Book
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 class QueryViewModel(
     private val bookshelfRepository: BookshelfRepository
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
+    val uiState = _uiState.asStateFlow()
+
+    var selectedBookId by mutableStateOf("")
+
+    private val _uiStateSearch = MutableStateFlow(SearchUiState())
+    val uiStateSearch = _uiStateSearch.asStateFlow()
+
+
+    // Notes: Question: I would like this to go to a separate viewModel since it belangs to a
+    //  different screen. but at moment I am not sure how to get it donem because to
+    //  select a favority book I would need to pass both view models
     // Logic for Favorite books -- Beg
-    // 1. المصدر الوحيد للحقيقة لقائمة المفضلات
-    private val _favoriteBooks = mutableStateListOf<Book>()
+    var favoriteBooks: MutableList<Book> by mutableStateOf(mutableListOf<Book>())
+        private set
 
-    // إذا احتجتِ عرض القائمة، استعمل هذا
-    val favoriteBooks: List<Book> get() = _favoriteBooks
 
-    // 2. حالة الواجهة مُشتقة مباشرةً
-    //    (يمكنك عرض Success(emptyList()) كحالة "فارغة")
-    val favoritesUiState: State<QueryUiState> = derivedStateOf {
-        // هنا نفترض أن نجاح الطلب يعني عرض القائمة حتى لو كانت فارغة
-        QueryUiState.Success(_favoriteBooks.toList())
+    var favoritesfUiState: QueryUiState by mutableStateOf(QueryUiState.Loading)
+        private set
+
+
+    fun isBookFavorite(book: Book): Boolean {
+        return !favoriteBooks.none { x -> x.id == book.id }
     }
 
-    // 3. دالة للتحقّق من وجود الكتاب
-    fun isBookFavorite(book: Book): Boolean = _favoriteBooks.any { it.id == book.id }
 
-    // 4. دالة للتبديل بين الإضافة والحذف
-    fun toggleFavorite(book: Book) {
-        if (isBookFavorite(book)) _favoriteBooks.removeAll { it.id == book.id }
-        else _favoriteBooks += book
+    fun addFavoriteBook(book: Book) {
+        if (!isBookFavorite(book)) {
+            favoriteBooks.add(book)
+            favoritesUpdated()
+        }
+    }
+
+    fun removeFavoriteBook(book: Book) {
+        favoriteBooks.removeIf { it.id == book.id }
+        favoritesUpdated()
+    }
+
+
+    private fun favoritesUpdated() {
+        viewModelScope.launch {
+            favoritesfUiState = QueryUiState.Loading
+            favoritesfUiState = QueryUiState.Success(favoriteBooks)
+
+        }
     }
     // Logic for Favorite books -- End
 
 
-    // 1. دفق داخلي mutable لحقل النص
-    private val _query = MutableStateFlow("")
-    val query: StateFlow<String> = _query.asStateFlow()
-
-    // 2. استدعاء من الواجهة
-    fun updateQuery(newQuery: String) {
-        _query.value = newQuery
+    fun updateQuery(query: String) {
+        _uiStateSearch.update { currentState ->
+            currentState.copy(
+                query = query
+            )
+        }
     }
 
-    // 3. دفق لحالة الواجهة مشتق من _query
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<QueryUiState> =
-        _query.debounce(300)                       // تأخير لضغط الطلبات
-            .distinctUntilChanged()              // تجاهل نفس النص
-            .flatMapLatest { q ->
-                bookshelfRepository.searchBooksFlow(q)
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = QueryUiState.Loading
+    fun updateSearchStarted(searchStarted: Boolean) {
+        _uiStateSearch.update { currentState ->
+            currentState.copy(
+                searchStarted = searchStarted
             )
+        }
+    }
+
+    fun getBooks(query: String = "") { //  "travel"
+        updateSearchStarted(true)
+        viewModelScope.launch {
+            _uiState.value = QueryUiState.Loading
+
+            _uiState.value = try {
+                // Notes: List<Book>? NULLABLE
+                val books = bookshelfRepository.getBooks(query)
+                if (books == null) {
+                    QueryUiState.Error
+                } else if (books.isEmpty()) {
+                    QueryUiState.Success(emptyList())
+                } else {
+                    QueryUiState.Success(books)
+                }
+            } catch (e: IOException) {
+                QueryUiState.Error
+            } catch (e: HttpException) {
+                QueryUiState.Error
+            }
+        }
+    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
