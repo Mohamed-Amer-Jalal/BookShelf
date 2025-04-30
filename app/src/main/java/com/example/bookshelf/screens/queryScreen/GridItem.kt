@@ -92,7 +92,7 @@ private fun GridItem(
                 modifier = Modifier
                     .aspectRatio(.6f),
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(book.volumeInfo.imageLinks?.thumbnail)
+                    .data(book.volumeInfo.imageLinks?.secureThumbnail)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(R.string.image_of_book),

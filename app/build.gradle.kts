@@ -84,4 +84,5 @@ dependencies {
     // مكتبة Coil الأساسية
     implementation(libs.coil.compose)
     implementation(libs.coil) // لنسخة Coil 2.x (أحدث إصدار)
+    implementation(libs.androidx.navigation.compose)
 }

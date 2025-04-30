@@ -18,9 +18,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class QueryViewModel(
-    private val bookshelfRepository: BookshelfRepository
-) : ViewModel() {
+class QueryViewModel(private val bookshelfRepository: BookshelfRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
@@ -42,7 +40,7 @@ class QueryViewModel(
         private set
 
 
-    fun isBookFavorite(book: Book): Boolean {
+    fun     isBookFavorite(book: Book): Boolean {
         return !favoriteBooks.none { x -> x.id == book.id }
     }
 

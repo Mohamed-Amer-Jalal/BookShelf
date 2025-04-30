@@ -45,8 +45,7 @@ fun MenuScreen(
                 onFavoriteClick = { /* Handle favorite toggle */ },
                 viewModel = viewModel
             )
-        }
-    ) { innerPadding ->
+        }) { innerPadding ->
         Spacer(modifier = Modifier.height(16.dp))
 
         when (uiState) {
@@ -58,8 +57,7 @@ fun MenuScreen(
                     viewModel = viewModel,
                     bookshelfList = uiState.bookshelfList,
                     modifier = modifier,
-                    onDetailsClick = { viewModel.selectedBookId = it.id }
-                )
+                    onDetailsClick = { viewModel.selectedBookId = it.id })
             }
 
             is QueryUiState.Error -> ErrorScreen(retryAction = { viewModel.getBooks() })
@@ -82,28 +80,21 @@ fun MainTopAppBar(
     onFavoriteClick: () -> Unit,
     viewModel: QueryViewModel
 ) {
-    TopAppBar(
-        title = {
-            if (isSearchActive) {
-                // عرض حقل البحث عندما يكون البحث مفعلًا
-                QueryScreen(
-                    viewModel = viewModel,
-                )
-            } else Text(stringResource(R.string.app_name))
-        },
-        actions = {
-            IconButton(onClick = onSearchClick) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(R.string.search)
-                )
-            }
-            IconButton(onClick = onFavoriteClick) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = stringResource(R.string.favorite)
-                )
-            }
+    TopAppBar(title = {
+        if (isSearchActive) QueryScreen(viewModel = viewModel)
+        else Text(stringResource(R.string.app_name))
+    }, actions = {
+        IconButton(onClick = onSearchClick) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(R.string.search)
+            )
         }
-    )
+        IconButton(onClick = onFavoriteClick) {
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = stringResource(R.string.favorite)
+            )
+        }
+    })
 }

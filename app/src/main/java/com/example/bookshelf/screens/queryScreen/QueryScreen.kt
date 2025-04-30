@@ -23,6 +23,7 @@ import com.example.bookshelf.R
 @Composable
 fun QueryScreen(
     viewModel: QueryViewModel,
+
 ) {
     val uiStateQuery = viewModel.uiStateSearch.collectAsState().value
     // الحصول على مدير التركيز لإخفاء لوحة المفاتيح

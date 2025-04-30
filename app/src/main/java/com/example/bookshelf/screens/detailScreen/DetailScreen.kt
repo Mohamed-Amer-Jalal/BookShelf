@@ -51,14 +51,14 @@ fun BookDetails(book: Book) {
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation()
     ) {
-        Column() {
+        Column {
             Text(
                 text = stringResource(R.string.title) + book.volumeInfo.title,
                 style = MaterialTheme.typography.titleLarge
             )
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(book.volumeInfo.imageLinks?.thumbnail).crossfade(true).build(),
+                    .data(book.volumeInfo.imageLinks?.secureThumbnail).crossfade(true).build(),
                 contentDescription = book.volumeInfo.title,
                 contentScale = ContentScale.FillWidth,
                 error = painterResource(R.drawable.ic_broken_image),
