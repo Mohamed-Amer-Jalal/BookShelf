@@ -103,7 +103,7 @@ class QueryViewModel(private val bookshelfRepository: BookshelfRepository) : Vie
                 QueryUiState.Error
             } catch (e: HttpException) {
                 QueryUiState.Error
-            }
+            } as QueryUiState
         }
     }
 

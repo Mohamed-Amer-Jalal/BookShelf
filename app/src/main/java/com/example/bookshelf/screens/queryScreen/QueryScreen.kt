@@ -59,20 +59,4 @@ fun QueryScreen(
         ),
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
     )
-
-    /*if (uiStateQuery.searchStarted) {
-        when (uiState) {
-            is QueryUiState.Loading -> LoadingScreen(modifier)
-
-            is QueryUiState.Success -> GridList(
-                viewModel = viewModel,
-                bookshelfList = uiState.bookshelfList,
-                modifier = modifier,
-                onDetailsClick = onDetailsClick,
-            )
-
-            is QueryUiState.Error ->
-                ErrorScreen(retryAction = retryAction, modifier)
-        }
-    }*/
 }
