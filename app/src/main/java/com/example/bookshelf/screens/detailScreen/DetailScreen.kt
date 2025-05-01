@@ -67,7 +67,7 @@ fun BookDetails(book: Book) {
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = stringResource(R.string.book_subtitle, book.volumeInfo.subtitle),
+                text = stringResource(R.string.book_subtitle, book.volumeInfo.subtitle!!),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))

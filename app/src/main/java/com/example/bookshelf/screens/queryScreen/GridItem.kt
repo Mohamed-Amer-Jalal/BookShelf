@@ -22,6 +22,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +43,12 @@ import com.example.bookshelf.screens.components.NothingFoundScreen
 @Composable
 fun GridList(
     viewModel: QueryViewModel,
-    bookshelfList: List<Book>,
+    bookshelfList: List<Book>?,
     modifier: Modifier = Modifier,
     onDetailsClick: (Book) -> Unit,
     contentPadding: PaddingValues = PaddingValues(24.dp)
 ) {
-    if (bookshelfList.isEmpty()) NothingFoundScreen()
+    if (bookshelfList!!.isEmpty()) NothingFoundScreen()
     else {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(150.dp),
@@ -59,7 +60,7 @@ fun GridList(
                 GridItem(
                     viewModel = viewModel,
                     book = book,
-                    onDetailsClick = onDetailsClick,
+                    onDetailsClick = onDetailsClick
                 )
             }
         }
@@ -72,8 +73,10 @@ private fun GridItem(
     book: Book,
     onDetailsClick: (Book) -> Unit,
 ) {
+    // Observe favorites from ViewModel
+    val favorites by viewModel.favorites.collectAsState()
     var expanded by remember { mutableStateOf(false) }
-    var favorite by remember { mutableStateOf(viewModel.isBookFavorite(book)) }
+    var favorite by remember { mutableStateOf(favorites.contains(book)) }
 
     Card(
         onClick = { onDetailsClick(book) },
@@ -108,8 +111,7 @@ private fun GridItem(
                 FavoriteButton(
                     isFavorite = favorite,
                     onFavoriteClick = {
-                        if (favorite) viewModel.removeFavoriteBook(book)
-                        else viewModel.addFavoriteBook(book)
+                        viewModel.toggleFavorite(book)
                         favorite = !favorite
                     },
                 )
@@ -124,10 +126,12 @@ private fun GridItem(
                         text = stringResource(R.string.book_title, book.volumeInfo.title),
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    Text(
-                        text = stringResource(R.string.book_subtitle, book.volumeInfo.subtitle),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    book.volumeInfo.subtitle?.let { subtitle ->
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                     Text(
                         text = stringResource(R.string.book_authors, book.volumeInfo.authorsList),
                         style = MaterialTheme.typography.bodySmall
