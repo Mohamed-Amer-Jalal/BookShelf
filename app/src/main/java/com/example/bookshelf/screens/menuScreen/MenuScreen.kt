@@ -47,7 +47,7 @@ fun MenuScreen(
                     viewModel = viewModel,
                     bookshelfList = uiState.books,
                     modifier = modifier,
-                    onDetailsClick = { viewModel.selectedBookId })
+                    onDetailsClick = { viewModel::setSelectedBookId })
             }
 
             is QueryUiState.Error -> ErrorScreen(retryAction = { viewModel.searchBooks() })

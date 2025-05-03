@@ -16,50 +16,61 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class QueryViewModel(private val bookshelfRepository: BookshelfRepository) : ViewModel() {
-    private val _uiState: MutableStateFlow<QueryUiState> = MutableStateFlow(QueryUiState.Loading)
+    // --- UI State ---
+    private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
     val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
 
-    private val _selectedBookId = MutableStateFlow<String?>(null)
-    var selectedBookId: StateFlow<String?> = _selectedBookId.asStateFlow()
-
-    private val _searchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    // --- Search Query ---
+    private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _favorites: MutableStateFlow<Set<Book>> = MutableStateFlow(emptySet())
+    // --- Selected Book ---
+    private val _selectedBookId = MutableStateFlow<String?>(null)
+
+    // --- Favorites ---
+    private val _favorites = MutableStateFlow<Set<Book>>(emptySet())
     val favorites: StateFlow<Set<Book>> = _favorites.asStateFlow()
 
-    /** Update query string. */
+    // --- Public Actions ---
+
+    /** Update search query text */
     fun updateQuery(query: String) {
         _searchQuery.value = query
     }
 
-    /** Performs search; updates UI state. */
-    fun searchBooks() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.value = QueryUiState.Loading
-            val result = runCatching { bookshelfRepository.getBooks(_searchQuery.value) }
-                .getOrElse { e ->
-                    _uiState.value = QueryUiState.Error(e.message)
-                    return@launch
-                }
-            _uiState.value = QueryUiState.Success(result)
+    /** Set the currently selected book by ID */
+    fun setSelectedBookId(bookId: String) {
+        _selectedBookId.value = bookId
+    }
+
+    /** Toggle favorite status for a book */
+    fun toggleFavorite(book: Book) {
+        _favorites.update { favorites ->
+            if (favorites.any { it.id == book.id }) favorites - book
+            else favorites + book
         }
     }
 
-    /** Toggle favorite status for a book. */
-    fun toggleFavorite(book: Book) {
-        _favorites.update { current ->
-            if (current.any { it.id == book.id }) current - book else current + book
+    /** Search books by current query */
+    fun searchBooks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = QueryUiState.Loading
+            try {
+                val books = bookshelfRepository.getBooks(_searchQuery.value)
+                _uiState.value = QueryUiState.Success(books)
+            } catch (e: Exception) {
+                _uiState.value = QueryUiState.Error(e.message ?: "Unknown error")
+            }
         }
     }
-    /** Factory for creating ViewModel with DI. */
+
+    // --- ViewModel Factory ---
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication)
-                val bookshelfRepository = application.container.bookshelfRepository
-                QueryViewModel(bookshelfRepository = bookshelfRepository)
+                    this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication
+                QueryViewModel(application.container.bookshelfRepository)
             }
         }
     }

@@ -48,7 +48,7 @@ fun GridList(
     onDetailsClick: (Book) -> Unit,
     contentPadding: PaddingValues = PaddingValues(24.dp)
 ) {
-    if (bookshelfList!!.isEmpty()) NothingFoundScreen()
+    if (bookshelfList.isNullOrEmpty()) NothingFoundScreen()
     else {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(150.dp),
@@ -75,8 +75,8 @@ private fun GridItem(
 ) {
     // Observe favorites from ViewModel
     val favorites by viewModel.favorites.collectAsState()
+    var favorite = remember(favorites) { favorites.contains(book) }
     var expanded by remember { mutableStateOf(false) }
-    var favorite by remember { mutableStateOf(favorites.contains(book)) }
 
     Card(
         onClick = { onDetailsClick(book) },
@@ -91,13 +91,18 @@ private fun GridItem(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val context = LocalContext.current
+            val imageModel = remember(book.volumeInfo.imageLinks?.secureThumbnail) {
+                ImageRequest.Builder(context)
+                    .data(book.volumeInfo.imageLinks?.secureThumbnail)
+                    .crossfade(true)
+                    .build()
+            }
+
             AsyncImage(
                 modifier = Modifier
                     .aspectRatio(.6f),
-                model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(book.volumeInfo.imageLinks?.secureThumbnail)
-                    .crossfade(true)
-                    .build(),
+                model = imageModel,
                 contentDescription = stringResource(R.string.image_of_book),
                 error = painterResource(id = R.drawable.ic_broken_image),
                 placeholder = painterResource(id = R.drawable.loading_img),
