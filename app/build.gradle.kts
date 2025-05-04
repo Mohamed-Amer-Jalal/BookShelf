@@ -41,48 +41,45 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
     implementation(libs.androidx.material.icons.extended)
+
+    // AndroidX Lifecycle & Navigation
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+
+    // Kotlin
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.core.jvm)
     implementation(libs.kotlin.stdlib.jdk8)
-    // Retrofit
+
+    // Networking
     implementation(libs.retrofit)
-
-    // Gson converter (for JSON)
-    implementation(libs.converter.gson)
-
-    // OkHttp (Retrofit's networking layer) - Often already included transitively
     implementation(libs.okhttp)
-
-    //Optional dependency for logging
     implementation(libs.logging.interceptor)
-
-    // Optional dependency for Kotlinx Serialization
+    implementation(libs.converter.gson)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
 
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
-
-    // مكتبة Coil الأساسية
+    // Images
+    implementation(libs.coil)
     implementation(libs.coil.compose)
-    implementation(libs.coil) // لنسخة Coil 2.x (أحدث إصدار)
-    implementation(libs.androidx.navigation.compose)
+
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
