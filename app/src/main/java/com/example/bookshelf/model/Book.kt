@@ -35,7 +35,7 @@ data class ImageLinks(
     val smallThumbnail: String? = null,
     val thumbnail: String? = null
 ) {
-    val secureThumbnail: String? get() = thumbnail?.replace("http://", "https://")
+    val secureThumbnail: String? get() = thumbnail?.replaceFirst("http://", "https://")
 }
 
 @Serializable
