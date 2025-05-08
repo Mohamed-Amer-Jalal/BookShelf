@@ -31,8 +31,8 @@ fun MenuScreen(
         topBar = {
             MainTopAppBar(
                 isSearchActive = isSearchActive,
-                onSearchClick = { isSearchActive = !isSearchActive },
-                onFavoriteClick = { /* Handle favorite toggle */ },
+                onSearchToggle = { isSearchActive = !isSearchActive },
+                onFavoritesClick = {},
                 viewModel = viewModel
             )
         }) { innerPadding ->
