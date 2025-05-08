@@ -1,6 +1,7 @@
 package com.example.bookshelf.screens.queryScreen
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf.BookshelfApplication
 import com.example.bookshelf.data.BooksRepository
+import com.example.bookshelf.model.Book
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -26,6 +28,25 @@ class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel()
 
     var selectedBookId: String by mutableStateOf("")
         internal set
+
+    private val _favoriteBooks = mutableStateListOf<Book>()
+    val favoriteBooks: List<Book> get() = _favoriteBooks
+
+    var favoritesUiState: QueryUiState by mutableStateOf(QueryUiState.Loading)
+        private set
+
+    fun isBookFavorite(book: Book): Boolean = _favoriteBooks.any { it.id == book.id }
+
+    fun toggleFavorite(book: Book) {
+        if (isBookFavorite(book)) _favoriteBooks.removeAll { it.id == book.id }
+        else _favoriteBooks.add(book)
+        updateFavoritesUiState()
+    }
+
+    private fun updateFavoritesUiState() {
+        favoritesUiState = QueryUiState.Loading
+        favoritesUiState = QueryUiState.Success(_favoriteBooks)
+    }
 
     fun updateSearchState(query: String? = null, searchStarted: Boolean? = null) =
         _searchState.update {

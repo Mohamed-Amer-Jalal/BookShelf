@@ -22,7 +22,6 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,9 +73,9 @@ private fun GridItem(
     onDetailsClick: (Book) -> Unit,
 ) {
     // Observe favorites from ViewModel
-    val favorites by viewModel.favorites.collectAsState()
-    var favorite = remember(favorites) { favorites.contains(book) }
     var expanded by remember { mutableStateOf(false) }
+    var favorite by remember { mutableStateOf(false) }
+
 
     Card(
         onClick = { onDetailsClick(book) },
@@ -131,12 +130,13 @@ private fun GridItem(
                         text = stringResource(R.string.book_title, book.volumeInfo.title),
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    book.volumeInfo.subtitle?.let { subtitle ->
-                        Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                    Text(
+                        text = stringResource(
+                            R.string.book_subtitle,
+                            book.volumeInfo.subtitle ?: "N/A"
+                        ),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     Text(
                         text = stringResource(R.string.book_authors, book.volumeInfo.authorsList),
                         style = MaterialTheme.typography.bodySmall
