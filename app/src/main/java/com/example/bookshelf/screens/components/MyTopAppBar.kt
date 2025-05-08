@@ -12,6 +12,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import com.example.bookshelf.R
 import com.example.bookshelf.screens.queryScreen.QueryViewModel
@@ -26,14 +27,18 @@ fun MainTopAppBar(
     viewModel: QueryViewModel
 ) {
     val searchState by viewModel.searchState.collectAsState()
+    val focusManager = LocalFocusManager.current
     TopAppBar(
         title = {
             if (isSearchActive) {
                 SearchField(
                     query = searchState.query,
                     onQueryChange = { viewModel.updateSearchState(query = it) },
-                    onSearch = { viewModel.getBooks(searchState.query) },
-                    onSearchComplete = { onSearchToggle() }
+                    onSearch = {
+                        viewModel.getBooks(searchState.query)
+                        focusManager.clearFocus()
+                        onSearchToggle()
+                    },
                 )
             } else Text(stringResource(R.string.app_name))
         },

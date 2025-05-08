@@ -26,8 +26,7 @@ import com.example.bookshelf.R
 fun SearchField(
     query: String,
     onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    onSearchComplete: () -> Unit
+    onSearch: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -57,7 +56,6 @@ fun SearchField(
         keyboardActions = KeyboardActions(onSearch = {
             onSearch()
             focusManager.clearFocus()
-            onSearchComplete()
         }),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,

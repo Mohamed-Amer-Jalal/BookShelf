@@ -1,20 +1,27 @@
 package com.example.bookshelf.screens.queryScreen
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,10 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.example.bookshelf.R
 import com.example.bookshelf.model.Book
@@ -76,7 +84,6 @@ private fun GridItem(
     var expanded by remember { mutableStateOf(false) }
     var favorite by remember { mutableStateOf(false) }
 
-
     Card(
         onClick = { onDetailsClick(book) },
         modifier = Modifier
@@ -90,22 +97,11 @@ private fun GridItem(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val context = LocalContext.current
-            val imageModel = remember(book.volumeInfo.imageLinks?.secureThumbnail) {
-                ImageRequest.Builder(context)
-                    .data(book.volumeInfo.imageLinks?.secureThumbnail)
-                    .crossfade(true)
-                    .build()
-            }
-
-            AsyncImage(
+            BookCover(
+                imageUrl = book.volumeInfo.imageLinks?.secureThumbnail,
                 modifier = Modifier
-                    .aspectRatio(.6f),
-                model = imageModel,
-                contentDescription = stringResource(R.string.image_of_book),
-                error = painterResource(id = R.drawable.ic_broken_image),
-                placeholder = painterResource(id = R.drawable.loading_img),
-                contentScale = ContentScale.FillBounds
+                    .fillMaxWidth()
+                    .height(180.dp)
             )
             Row(
                 modifier = Modifier
@@ -125,7 +121,13 @@ private fun GridItem(
                 )
             }
             if (expanded) {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Text(
                         text = stringResource(R.string.book_title, book.volumeInfo.title),
                         style = MaterialTheme.typography.bodyLarge
@@ -150,6 +152,61 @@ private fun GridItem(
         }
     }
 }
+
+@Composable
+fun BookCover(
+    imageUrl: String?, modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val request = remember(imageUrl) {
+        ImageRequest.Builder(context)
+            .data(imageUrl)
+            .crossfade(true)
+            .build()
+    }
+    SubcomposeAsyncImage(
+        model = request,
+        contentDescription = stringResource(R.string.image_of_book),
+        modifier = modifier.aspectRatio(0.6f),
+        contentScale = ContentScale.FillBounds
+    ) {
+        when (painter.state) {
+            // أثناء التحميل: أيقونة تحميل دوّارة
+            is AsyncImagePainter.State.Loading -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.HourglassEmpty,
+                    contentDescription = stringResource(R.string.loading),
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // عند الخطأ: أيقونة كسر الصورة
+            is AsyncImagePainter.State.Error -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.errorContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BrokenImage,
+                    contentDescription = stringResource(R.string.image_failed),
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onError
+                )
+            }
+
+            // الصورة الأصلية عند النجاح
+            else -> SubcomposeAsyncImageContent()
+        }
+    }
+}
+
 
 @Composable
 fun FavoriteButton(isFavorite: Boolean, onFavoriteClick: () -> Unit) {
