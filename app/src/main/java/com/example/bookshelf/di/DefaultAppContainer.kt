@@ -1,6 +1,6 @@
 package com.example.bookshelf.di
 
-import com.example.bookshelf.data.BookshelfRepository
+import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.data.DefaultBookshelfRepository
 import com.example.bookshelf.network.BookshelfApiService
 import retrofit2.Retrofit
@@ -13,7 +13,7 @@ class DefaultAppContainer() : AppContainer {
             .baseUrl("https://www.googleapis.com/books/v1/").build()
             .create(BookshelfApiService::class.java)
     }
-    override val bookshelfRepository: BookshelfRepository by lazy {
+    override val bookshelfRepository: BooksRepository by lazy {
         DefaultBookshelfRepository(bookshelfApiService)
     }
 }

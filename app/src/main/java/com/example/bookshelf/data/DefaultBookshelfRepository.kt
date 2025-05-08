@@ -1,42 +1,36 @@
 package com.example.bookshelf.data
 
-import android.util.Log
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.network.BookshelfApiService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okio.IOException
+import retrofit2.Response
 
+/**
+ * المستودع الافتراضي لجلب بيانات الكتب من  خدمة الشبكة.
+ */
 class DefaultBookshelfRepository(
-    private val apiService: BookshelfApiService
-) : BookshelfRepository {
-
-    companion object {
-        private const val TAG = "BookshelfRepo"
-    }
-
-    /**
-     * Retrieves list of books; returns empty list on failure.
-     */
-    override suspend fun getBooks(query: String): List<Book> = withContext(Dispatchers.IO) {
-        try {
-            val response = apiService.getBooks(query)
-            response.body()?.items.orEmpty()
-        } catch (e: IOException) {
-            Log.e(TAG, "Error fetching books for query=[$query]", e)
+    private val bookshelfApiService: BookshelfApiService
+) : BooksRepository {
+    /** Retrieves a list of books matching the query from the API */
+    override suspend fun getBooks(query: String): List<Book> =
+        runCatching {
+            bookshelfApiService.getBooks(query).takeIf { it.isSuccessful }?.body()?.items.orEmpty()
+        }.getOrElse {
             emptyList()
         }
-    }
+
+    /** Retrieves a specific book by ID from the API */
+    override suspend fun getBook(id: String): Book? =
+        safeApiCall { bookshelfApiService.getBook(id) }
 
     /**
-     * Retrieves a single book by ID; returns null on failure.
+     * Handles API call and returns the body if successful, null otherwise
      */
-    override suspend fun getBook(id: String): Book? = withContext(Dispatchers.IO) {
-        try {
-            apiService.getBook(id)
-                .body()
-        } catch (e: IOException) {
-            Log.e(TAG, "Error fetching book id=[$id]", e)
+    private inline fun <T> safeApiCall(apiCall: () -> Response<T>): T? {
+        return try {
+            val response = apiCall()
+            if (response.isSuccessful) response.body() else null
+        } catch (e: Exception) {
+            e.printStackTrace()
             null
         }
     }
