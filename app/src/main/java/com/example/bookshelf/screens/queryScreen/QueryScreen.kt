@@ -11,7 +11,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
@@ -23,13 +22,13 @@ import com.example.bookshelf.R
 
 @Composable
 fun QueryScreen(viewModel: QueryViewModel) {
-    val searchQuery by viewModel.searchQuery.collectAsState()
+    val uiStateQuery = viewModel.searchState.collectAsState().value
     // الحصول على مدير التركيز لإخفاء لوحة المفاتيح
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
-        value = searchQuery,
-        onValueChange = { viewModel::updateQuery },
+        value = uiStateQuery.query,
+        onValueChange = { viewModel.updateSearchState(it) },
         placeholder = { Text(stringResource(R.string.search)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
@@ -38,7 +37,7 @@ fun QueryScreen(viewModel: QueryViewModel) {
         ),
         keyboardActions = KeyboardActions(onSearch = {
             focusManager.clearFocus()
-            viewModel.searchBooks()
+            viewModel.getBooks(uiStateQuery.query)
         }),
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +45,7 @@ fun QueryScreen(viewModel: QueryViewModel) {
             .onKeyEvent { event ->
                 if (event.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
                     focusManager.clearFocus()
-                    viewModel.searchBooks()
+                    viewModel.getBooks(uiStateQuery.query)
                 }
                 false
             },
