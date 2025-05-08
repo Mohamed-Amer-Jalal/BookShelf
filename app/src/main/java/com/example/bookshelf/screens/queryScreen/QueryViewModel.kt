@@ -1,76 +1,69 @@
 package com.example.bookshelf.screens.queryScreen
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf.BookshelfApplication
-import com.example.bookshelf.data.BookshelfRepository
-import com.example.bookshelf.model.Book
-import kotlinx.coroutines.Dispatchers
+import com.example.bookshelf.data.BooksRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.IOException
+import retrofit2.HttpException
 
-class QueryViewModel(private val bookshelfRepository: BookshelfRepository) : ViewModel() {
-    // --- UI State ---
+class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
-    val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<QueryUiState> = _uiState
 
-    // --- Search Query ---
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    private val _searchState = MutableStateFlow(SearchUiState())
+    val searchState: StateFlow<SearchUiState> = _searchState
 
-    // --- Selected Book ---
-    private val _selectedBookId = MutableStateFlow<String?>(null)
+    var selectedBookId: String by mutableStateOf("")
+        internal set
 
-    // --- Favorites ---
-    private val _favorites = MutableStateFlow<Set<Book>>(emptySet())
-    val favorites: StateFlow<Set<Book>> = _favorites.asStateFlow()
-
-    // --- Public Actions ---
-
-    /** Update search query text */
-    fun updateQuery(query: String) {
-        _searchQuery.value = query
-    }
-
-    /** Set the currently selected book by ID */
-    fun setSelectedBookId(bookId: String) {
-        _selectedBookId.value = bookId
-    }
-
-    /** Toggle favorite status for a book */
-    fun toggleFavorite(book: Book) {
-        _favorites.update { favorites ->
-            if (favorites.any { it.id == book.id }) favorites - book
-            else favorites + book
+    fun updateSearchState(query: String? = null, searchStarted: Boolean? = null) =
+        _searchState.update {
+            it.copy(
+                query = query ?: it.query,
+                searchStarted = searchStarted ?: it.searchStarted
+            )
         }
-    }
 
-    /** Search books by current query */
-    fun searchBooks() {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun getBooks(query: String = "") {
+        updateSearchState(searchStarted = true)
+
+        viewModelScope.launch {
             _uiState.value = QueryUiState.Loading
+
             try {
-                val books = bookshelfRepository.getBooks(_searchQuery.value)
-                _uiState.value = QueryUiState.Success(books)
-            } catch (e: Exception) {
-                _uiState.value = QueryUiState.Error(e.message ?: "Unknown error")
+                booksRepository.getBooks(query).orEmpty().let { books ->
+                    _uiState.value =
+                        if (books.isEmpty()) QueryUiState.Error
+                        else QueryUiState.Success(books)
+                }
+            } catch (e: IOException) {
+                _uiState.value = QueryUiState.Error
+                e.printStackTrace()
+            } catch (e: HttpException) {
+                _uiState.value = QueryUiState.Error
+                e.printStackTrace()
             }
         }
     }
 
-    // --- ViewModel Factory ---
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application =
-                    this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication
-                QueryViewModel(application.container.bookshelfRepository)
+                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication)
+                val bookshelfRepository = application.container.bookshelfRepository
+                QueryViewModel(booksRepository = bookshelfRepository)
             }
         }
     }

@@ -43,14 +43,14 @@ fun MenuScreen(
 
             is QueryUiState.Success -> {
                 GridList(
-                    contentPadding = innerPadding ,
+                    contentPadding = innerPadding,
                     viewModel = viewModel,
                     bookshelfList = uiState.books,
                     modifier = modifier,
-                    onDetailsClick = { viewModel::setSelectedBookId })
+                    onDetailsClick = { viewModel.selectedBookId = it.id })
             }
 
-            is QueryUiState.Error -> ErrorScreen(retryAction = { viewModel.searchBooks() })
+            is QueryUiState.Error -> ErrorScreen(retryAction = { viewModel.getBooks() })
         }
     }
 }
