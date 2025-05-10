@@ -26,6 +26,7 @@ fun MenuScreen(
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
     val uiState = viewModel.uiState.collectAsState().value
+    val searchState by viewModel.searchState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -38,7 +39,7 @@ fun MenuScreen(
         }) { innerPadding ->
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (uiState) {
+        if (searchState.searchStarted) when (uiState) {
             is QueryUiState.Loading -> LoadingScreen()
 
             is QueryUiState.Success -> {
