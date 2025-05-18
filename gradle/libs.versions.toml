@@ -1,7 +1,7 @@
 [versions]
 # Android Gradle Plugin & Kotlin
 agp = "8.10.0"
-kotlin = "2.1.20"
+kotlin = "2.1.21"
 
 # AndroidX Core & Lifecycle
 coreKtx = "1.16.0"
