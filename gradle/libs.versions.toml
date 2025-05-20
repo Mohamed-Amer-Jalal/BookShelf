@@ -21,7 +21,7 @@ okhttp = "4.12.0"
 loggingInterceptor = "4.12.0"
 retrofit = "3.0.0"
 converterGson = "3.0.0"
-retrofit2KotlinxSerializationConverter = "3.0.0"
+retrofit2KotlinxSerializationConverter = "1.0.0"
 
 # KotlinX
 kotlinxCoroutinesAndroid = "1.10.2"
