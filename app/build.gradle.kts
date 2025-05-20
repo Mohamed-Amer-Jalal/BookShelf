@@ -52,7 +52,7 @@ dependencies {
 
     // AndroidX Lifecycle & Navigation
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
@@ -72,8 +72,8 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
 
     // Images
-    implementation(libs.coil)
-    implementation(libs.coil.compose)
+    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Testing
     testImplementation(libs.junit)
