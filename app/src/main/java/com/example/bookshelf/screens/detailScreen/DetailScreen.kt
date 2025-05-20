@@ -19,8 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.bookshelf.R
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.screens.components.ErrorScreen
@@ -87,7 +88,7 @@ fun BookDetails(book: Book) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.listprice) + book.price,
+                text = stringResource(R.string.listPrice) + book.price,
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))

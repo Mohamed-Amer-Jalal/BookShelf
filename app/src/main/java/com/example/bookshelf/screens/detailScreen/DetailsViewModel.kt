@@ -6,14 +6,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf.BookshelfApplication
-import com.example.bookshelf.data.BookshelfRepository
+import com.example.bookshelf.data.BooksRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class DetailsViewModel(private val bookshelfRepository: BookshelfRepository) : ViewModel() {
+class DetailsViewModel(private val bookshelfRepository: BooksRepository) : ViewModel() {
     private val _uiStateDetail = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
     val uiStateDetail = _uiStateDetail.asStateFlow()
 

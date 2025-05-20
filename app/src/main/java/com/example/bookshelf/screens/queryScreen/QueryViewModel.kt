@@ -27,7 +27,7 @@ class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel()
     val searchState: StateFlow<SearchUiState> = _searchState
 
     var selectedBookId: String by mutableStateOf("")
-        internal set
+        private set
 
     private val _favoriteBooks = mutableStateListOf<Book>()
     val favoriteBooks: List<Book> get() = _favoriteBooks

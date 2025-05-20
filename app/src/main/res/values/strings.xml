@@ -2,8 +2,6 @@
     <string name="app_name">BookShelf</string>
     <string name="search">Search</string>
     <string name="favorite">Favorite</string>
-    <string name="close">Close</string>
-
     <string name="book_title"><i>Title:</i> %s</string>
     <string name="book_subtitle"><u>Subtitle:</u> %s</string>
     <string name="book_authors"><b>Authors:</b> %s</string>
@@ -13,16 +11,11 @@
     <string name="failed_to_load">Failed to load!!!</string>
     <string name="try_again">Try again</string>
     <string name="image_of_book">Image of book</string>
-    <string name="error_loading_image">Error loading image</string>
     <string name="nothing_found_try_a_different_search">Nothing found. Try a different search.</string>
     <string name="description">"description: "</string>
-    <string name="listprice">"listPrice: "</string>
+    <string name="listPrice">"listPrice: "</string>
     <string name="country">"country: "</string>
     <string name="title">"Title: "</string>
-    <string name="no_favorite_books">No Favorite Books.</string>
-    <string name="btn_search">Search Google Library</string>
-    <string name="btn_favorite">My Favorite Books</string>
-    <string name="btn_try_again">Try again</string>
     <string name="close_search">Close Search</string>
     <string name="loading">Loading</string>
     <string name="image_failed">Image Failed</string>
