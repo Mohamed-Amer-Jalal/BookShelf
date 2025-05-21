@@ -8,24 +8,46 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.bookshelf.R
+import com.example.bookshelf.screens.components.ErrorScreen
+import com.example.bookshelf.screens.components.LoadingScreen
 import com.example.bookshelf.screens.queryScreen.GridList
+import com.example.bookshelf.screens.queryScreen.QueryUiState
 import com.example.bookshelf.screens.queryScreen.QueryViewModel
 
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    viewModel: QueryViewModel
+    viewModel: QueryViewModel,
+    bookshelfList: QueryUiState,
+    retryAction: () -> Unit
 ) {
-    val favoriteBooks = viewModel.favoriteBooks
-    if (favoriteBooks.isNotEmpty()) GridList(
-        viewModel = viewModel,
-        bookshelfList = favoriteBooks,
-        modifier = modifier,
-        onDetailsClick = { }
-    )
-    else Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            stringResource(R.string.NoFavoriteBooksText)
-        )
+    val hasFavorites = viewModel.favoriteBooks.isNotEmpty()
+    if (!hasFavorites) {
+        EmptyFavoritesView(modifier)
+        return
+    }
+    when (bookshelfList) {
+        is QueryUiState.Loading -> LoadingScreen(modifier = modifier)
+
+        is QueryUiState.Success -> {
+            GridList(
+                viewModel = viewModel,
+                bookshelfList = bookshelfList.books,
+                modifier = modifier,
+                onDetailsClick = { /* Add navigation or details logic here */ }
+            )
+        }
+
+        is QueryUiState.Error -> ErrorScreen(retryAction = retryAction)
+    }
+}
+
+@Composable
+private fun EmptyFavoritesView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = stringResource(R.string.NoFavoriteBooksText))
     }
 }

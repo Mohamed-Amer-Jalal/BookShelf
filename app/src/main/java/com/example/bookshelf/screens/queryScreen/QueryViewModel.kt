@@ -14,6 +14,7 @@ import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.model.Book
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
@@ -21,13 +22,13 @@ import retrofit2.HttpException
 
 class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
-    val uiState: StateFlow<QueryUiState> = _uiState
+    val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
 
     private val _searchState = MutableStateFlow(SearchUiState())
-    val searchState: StateFlow<SearchUiState> = _searchState
+    val searchState: StateFlow<SearchUiState> = _searchState.asStateFlow()
 
     var selectedBookId: String by mutableStateOf("")
-        private set
+        internal set
 
     private val _favoriteBooks = mutableStateListOf<Book>()
     val favoriteBooks: List<Book> get() = _favoriteBooks
