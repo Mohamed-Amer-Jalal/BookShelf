@@ -2,70 +2,33 @@ package com.example.bookshelf.screens.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import com.example.bookshelf.NavigationItem
 import com.example.bookshelf.R
-import com.example.bookshelf.screens.queryScreen.SearchViewModel
-import com.example.bookshelf.screens.queryScreen.SearchField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(
-    isSearchActive: Boolean,
-    onSearchToggle: () -> Unit,
-    onFavoritesClick: () -> Unit,
-    viewModel: SearchViewModel
+    canNavigateBack: Boolean,
+    onNavigateUpClicked: () -> Unit,
+    currentScreen: NavigationItem
 ) {
-    val searchState by viewModel.searchState.collectAsState()
-    val focusManager = LocalFocusManager.current
     TopAppBar(
-        title = {
-            if (isSearchActive) {
-                SearchField(
-                    query = searchState.search,
-                    onQueryChange = { viewModel.updateSearchState(query = it) },
-                    onSearch = {
-                        viewModel.getBooks(searchState.search)
-                        focusManager.clearFocus()
-                        onSearchToggle()
-                    },
-                )
-            } else Text(stringResource(R.string.app_name))
-        },
+        title = { Text(text = currentScreen.route) },
         navigationIcon = {
-            if (isSearchActive) {
-                IconButton(onClick = onSearchToggle) {
+            if (canNavigateBack) {
+                IconButton(onClick = onNavigateUpClicked) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.close_search)
+                        contentDescription = stringResource(R.string.try_again)
                     )
                 }
-            }
-        },
-        actions = {
-            if (!isSearchActive) {
-                IconButton(onClick = onSearchToggle) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search)
-                    )
-                }
-            }
-            IconButton(onClick = onFavoritesClick) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = stringResource(R.string.favorite)
-                )
             }
         }
     )
