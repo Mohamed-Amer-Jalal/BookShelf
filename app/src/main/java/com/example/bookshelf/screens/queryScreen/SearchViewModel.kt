@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import okio.IOException
 import retrofit2.HttpException
 
-class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel() {
+class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
     val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
 
@@ -52,7 +52,7 @@ class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel()
     fun updateSearchState(query: String? = null, searchStarted: Boolean? = null) =
         _searchState.update {
             it.copy(
-                query = query ?: it.query,
+                search = query ?: it.search,
                 searchStarted = searchStarted ?: it.searchStarted
             )
         }
@@ -85,7 +85,7 @@ class QueryViewModel(private val booksRepository: BooksRepository) : ViewModel()
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication)
                 val bookshelfRepository = application.container.bookshelfRepository
-                QueryViewModel(booksRepository = bookshelfRepository)
+                SearchViewModel(booksRepository = bookshelfRepository)
             }
         }
     }
