@@ -12,14 +12,15 @@ import com.example.bookshelf.screens.components.ErrorScreen
 import com.example.bookshelf.screens.components.LoadingScreen
 import com.example.bookshelf.screens.queryScreen.GridList
 import com.example.bookshelf.screens.queryScreen.QueryUiState
-import com.example.bookshelf.screens.queryScreen.QueryViewModel
+import com.example.bookshelf.screens.queryScreen.SearchViewModel
 
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    viewModel: QueryViewModel,
+    viewModel: SearchViewModel,
     bookshelfList: QueryUiState,
-    retryAction: () -> Unit
+    retryAction: () -> Unit,
+    onBack: () -> Boolean
 ) {
     val hasFavorites = viewModel.favoriteBooks.isNotEmpty()
     if (!hasFavorites) {

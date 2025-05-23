@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.material3.adaptive.navigation.suite.android)
 
     // Kotlin
     implementation(libs.kotlinx.coroutines.core)
@@ -74,6 +75,7 @@ dependencies {
     // Images
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil.network.okhttp)
+
 
     // Testing
     testImplementation(libs.junit)

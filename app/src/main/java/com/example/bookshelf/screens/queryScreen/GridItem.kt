@@ -43,7 +43,7 @@ import com.example.bookshelf.screens.components.NothingFoundScreen
 
 @Composable
 fun GridList(
-    viewModel: QueryViewModel,
+    viewModel: SearchViewModel,
     bookshelfList: List<Book>?,
     modifier: Modifier = Modifier,
     onDetailsClick: (Book) -> Unit,
@@ -70,7 +70,7 @@ fun GridList(
 
 @Composable
 private fun GridItem(
-    viewModel: QueryViewModel,
+    viewModel: SearchViewModel,
     book: Book,
     onDetailsClick: (Book) -> Unit,
 ) {

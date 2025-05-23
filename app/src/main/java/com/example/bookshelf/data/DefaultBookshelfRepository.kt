@@ -2,7 +2,6 @@ package com.example.bookshelf.data
 
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.network.BookshelfApiService
-import retrofit2.Response
 
 /**
  * المستودع الافتراضي لجلب بيانات الكتب من  خدمة الشبكة.
@@ -10,25 +9,35 @@ import retrofit2.Response
 class DefaultBookshelfRepository(
     private val bookshelfApiService: BookshelfApiService
 ) : BooksRepository {
-    /** Retrieves a list of books matching the query from the API */
-    override suspend fun getBooks(query: String): List<Book> =
-        runCatching {
-            bookshelfApiService.getBooks(query).takeIf { it.isSuccessful }?.body()?.items.orEmpty()
-        }.getOrElse {
-            emptyList()
-        }
-
-    /** Retrieves a specific book by ID from the API */
-    override suspend fun getBook(id: String): Book? =
-        safeApiCall { bookshelfApiService.getBook(id) }
+    /**
+     * Retrieves a list of books matching the query from the API.
+     * Returns an empty list if the request fails or returns no results.
+     */
+    override suspend fun getBooks(query: String): List<Book> {
+        return safeApiCall {
+            val response = bookshelfApiService.getBooks(query)
+            if (response.isSuccessful) response.body()?.items.orEmpty() else emptyList()
+        } ?: emptyList()
+    }
 
     /**
-     * Handles API call and returns the body if successful, null otherwise
+     * Retrieves a specific book by its ID from the API.
+     * Returns null if the request fails.
      */
-    private inline fun <T> safeApiCall(apiCall: () -> Response<T>): T? {
-        return try {
-            val response = apiCall()
+    override suspend fun getBook(id: String): Book? {
+        return safeApiCall {
+            val response = bookshelfApiService.getBook(id)
             if (response.isSuccessful) response.body() else null
+        }
+    }
+
+    /**
+     * Safe API call handler that executes the call inside a try-catch block.
+     * Returns null if an exception occurs.
+     */
+    private inline fun <T> safeApiCall(apiCall: () -> T): T? {
+        return try {
+            apiCall()
         } catch (e: Exception) {
             e.printStackTrace()
             null

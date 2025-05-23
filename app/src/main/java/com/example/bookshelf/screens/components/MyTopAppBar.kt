@@ -15,7 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import com.example.bookshelf.R
-import com.example.bookshelf.screens.queryScreen.QueryViewModel
+import com.example.bookshelf.screens.queryScreen.SearchViewModel
 import com.example.bookshelf.screens.queryScreen.SearchField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +24,7 @@ fun MainTopAppBar(
     isSearchActive: Boolean,
     onSearchToggle: () -> Unit,
     onFavoritesClick: () -> Unit,
-    viewModel: QueryViewModel
+    viewModel: SearchViewModel
 ) {
     val searchState by viewModel.searchState.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -32,10 +32,10 @@ fun MainTopAppBar(
         title = {
             if (isSearchActive) {
                 SearchField(
-                    query = searchState.query,
+                    query = searchState.search,
                     onQueryChange = { viewModel.updateSearchState(query = it) },
                     onSearch = {
-                        viewModel.getBooks(searchState.query)
+                        viewModel.getBooks(searchState.search)
                         focusManager.clearFocus()
                         onSearchToggle()
                     },
