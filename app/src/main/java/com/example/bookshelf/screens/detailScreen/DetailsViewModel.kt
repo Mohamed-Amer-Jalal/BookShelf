@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf.BookshelfApplication
 import com.example.bookshelf.data.BooksRepository
+import com.example.bookshelf.screens.components.BookUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -14,7 +15,7 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class DetailsViewModel(private val bookshelfRepository: BooksRepository) : ViewModel() {
-    private val _uiStateDetail = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
+    private val _uiStateDetail = MutableStateFlow<BookUiState>(BookUiState.Loading)
     val uiStateDetail = _uiStateDetail.asStateFlow()
 
     fun getBook(id: String) {
@@ -22,15 +23,14 @@ class DetailsViewModel(private val bookshelfRepository: BooksRepository) : ViewM
             _uiStateDetail.value = try {
                 // Notes: List<Book>? NULLABLE
                 val book = bookshelfRepository.getBook(id)
-                if (book == null) {
-                    DetailsUiState.Error
-                } else{
-                    DetailsUiState.Success(book)
-                }
+                if (book == null) BookUiState.Error
+                else BookUiState.DetailsSuccess(book)
             } catch (e: IOException) {
-                DetailsUiState.Error
+                e.printStackTrace()
+                BookUiState.Error
             } catch (e: HttpException) {
-                DetailsUiState.Error
+                e.printStackTrace()
+                BookUiState.Error
             }
         }
     }

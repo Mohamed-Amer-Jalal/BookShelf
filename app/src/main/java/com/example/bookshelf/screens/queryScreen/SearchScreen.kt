@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.bookshelf.R
 import com.example.bookshelf.model.Book
+import com.example.bookshelf.screens.components.BookUiState
 import com.example.bookshelf.screens.components.ErrorScreen
 import com.example.bookshelf.screens.components.LoadingScreen
 
@@ -79,9 +80,9 @@ fun SearchScreen(
 
         if (searchState.searchStarted) {
             when (uiState) {
-                is QueryUiState.Loading -> LoadingScreen(modifier = modifier)
+                is BookUiState.Loading -> LoadingScreen(modifier = modifier)
 
-                is QueryUiState.Success ->
+                is BookUiState.ListSuccess ->
                     GridList(
                         viewModel = viewModel,
                         bookshelfList = uiState.books,
@@ -89,7 +90,7 @@ fun SearchScreen(
                         onDetailsClick = onDetailsClick
                     )
 
-                is QueryUiState.Error -> ErrorScreen(retryAction = retryAction, modifier = modifier)
+                else -> ErrorScreen(retryAction = retryAction, modifier = modifier)
             }
         }
     }

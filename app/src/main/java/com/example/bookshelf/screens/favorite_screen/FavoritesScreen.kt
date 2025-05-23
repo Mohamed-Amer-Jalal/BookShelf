@@ -3,16 +3,16 @@ package com.example.bookshelf.screens.favorite_screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.bookshelf.screens.components.BookUiState
 import com.example.bookshelf.screens.components.ErrorScreen
 import com.example.bookshelf.screens.components.LoadingScreen
 import com.example.bookshelf.screens.queryScreen.GridList
-import com.example.bookshelf.screens.queryScreen.QueryUiState
 import com.example.bookshelf.screens.queryScreen.SearchViewModel
 
 @Composable
 fun FavoritesScreen(
     viewModel: SearchViewModel,
-    bookshelfUiState: QueryUiState,
+    bookshelfUiState: BookUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
     onBack: () -> Boolean
@@ -20,9 +20,9 @@ fun FavoritesScreen(
     Column {
         if (!viewModel.favoriteBooks.isEmpty()) {
             when (bookshelfUiState) {
-                is QueryUiState.Loading -> LoadingScreen(modifier = modifier)
+                is BookUiState.Loading -> LoadingScreen(modifier = modifier)
 
-                is QueryUiState.Success -> {
+                is BookUiState.ListSuccess -> {
                     GridList(
                         viewModel = viewModel,
                         bookshelfList = bookshelfUiState.books,
@@ -31,7 +31,7 @@ fun FavoritesScreen(
                     )
                 }
 
-                is QueryUiState.Error -> ErrorScreen(retryAction = retryAction)
+                else -> ErrorScreen(retryAction = retryAction)
             }
         }
     }

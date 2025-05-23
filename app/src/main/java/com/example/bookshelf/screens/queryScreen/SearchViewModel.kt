@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.bookshelf.BookshelfApplication
 import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.model.Book
+import com.example.bookshelf.screens.components.BookUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,8 +22,8 @@ import okio.IOException
 import retrofit2.HttpException
 
 class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow<QueryUiState>(QueryUiState.Loading)
-    val uiState: StateFlow<QueryUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<BookUiState>(BookUiState.Loading)
+    val uiState: StateFlow<BookUiState> = _uiState.asStateFlow()
 
     private val _searchState = MutableStateFlow(SearchUiState())
     val searchState: StateFlow<SearchUiState> = _searchState.asStateFlow()
@@ -33,7 +34,7 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
     private val _favoriteBooks = mutableStateListOf<Book>()
     val favoriteBooks: List<Book> get() = _favoriteBooks
 
-    var favoritesUiState: QueryUiState by mutableStateOf(QueryUiState.Loading)
+    var favoritesUiState: BookUiState by mutableStateOf(BookUiState.Loading)
         private set
 
     fun isBookFavorite(book: Book): Boolean = _favoriteBooks.any { it.id == book.id }
@@ -45,8 +46,8 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
     }
 
     private fun updateFavoritesUiState() {
-        favoritesUiState = QueryUiState.Loading
-        favoritesUiState = QueryUiState.Success(_favoriteBooks)
+        favoritesUiState = BookUiState.Loading
+        favoritesUiState = BookUiState.ListSuccess(_favoriteBooks)
     }
 
     fun updateSearchState(query: String? = null, searchStarted: Boolean? = null) =
@@ -61,19 +62,19 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
         updateSearchState(searchStarted = true)
 
         viewModelScope.launch {
-            _uiState.value = QueryUiState.Loading
+            _uiState.value = BookUiState.Loading
 
             try {
                 booksRepository.getBooks(query).orEmpty().let { books ->
                     _uiState.value =
-                        if (books.isEmpty()) QueryUiState.Error
-                        else QueryUiState.Success(books)
+                        if (books.isEmpty()) BookUiState.Error
+                        else BookUiState.ListSuccess(books)
                 }
             } catch (e: IOException) {
-                _uiState.value = QueryUiState.Error
+                _uiState.value = BookUiState.Error
                 e.printStackTrace()
             } catch (e: HttpException) {
-                _uiState.value = QueryUiState.Error
+                _uiState.value = BookUiState.Error
                 e.printStackTrace()
             }
         }

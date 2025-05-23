@@ -16,9 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.bookshelf.R
 
 @Composable
-fun NothingFoundScreen(
-    modifier: Modifier = Modifier
-) {
+fun NothingFoundScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -26,7 +24,7 @@ fun NothingFoundScreen(
     ) {
         Image(
             modifier = Modifier.fillMaxWidth(),
-            painter = painterResource(id = R.drawable.ic_not_found),
+            painter = painterResource(R.drawable.ic_not_found),
             contentDescription = stringResource(R.string.nothing_found_try_a_different_search),
             contentScale = ContentScale.Fit
         )

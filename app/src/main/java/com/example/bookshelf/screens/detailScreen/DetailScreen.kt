@@ -24,6 +24,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.bookshelf.R
 import com.example.bookshelf.model.Book
+import com.example.bookshelf.screens.components.BookUiState
 import com.example.bookshelf.screens.components.ErrorScreen
 import com.example.bookshelf.screens.components.LoadingScreen
 
@@ -35,11 +36,11 @@ fun DetailScreen(
     val uiStateDet = viewModel.uiStateDetail.collectAsState().value
 
     when (uiStateDet) {
-        is DetailsUiState.Loading -> LoadingScreen()
+        is BookUiState.Loading -> LoadingScreen()
 
-        is DetailsUiState.Error -> ErrorScreen(retryAction = retryAction)
+        is BookUiState.DetailsSuccess -> BookDetails(uiStateDet.book)
 
-        is DetailsUiState.Success -> BookDetails(uiStateDet.bookItem)
+        else -> ErrorScreen(retryAction = retryAction)
     }
 }
 
