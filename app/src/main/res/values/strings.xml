@@ -16,8 +16,4 @@
     <string name="listPrice">"listPrice: "</string>
     <string name="country">"country: "</string>
     <string name="title">"Title: "</string>
-    <string name="close_search">Close Search</string>
-    <string name="loading">Loading</string>
-    <string name="image_failed">Image Failed</string>
-    <string name="NoFavoriteBooksText">No Favorite Books.</string>
 </resources>
