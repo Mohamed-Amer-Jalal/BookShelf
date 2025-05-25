@@ -8,8 +8,6 @@ import com.example.bookshelf.screens.favorite_screen.FavoritesScreen
 import com.example.bookshelf.screens.menuScreen.MenuScreen
 import com.example.bookshelf.screens.queryScreen.SearchScreen
 
-
-
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -41,8 +39,8 @@ fun AppNavigation() {
                 onBack = { navController.popBackStack() },
                 modifier = TODO(),
                 viewModel = TODO(),
-                bookshelfList = TODO(),
-                retryAction = TODO()
+                retryAction = TODO(),
+                bookshelfUiState = TODO()
             )
         }
     }
