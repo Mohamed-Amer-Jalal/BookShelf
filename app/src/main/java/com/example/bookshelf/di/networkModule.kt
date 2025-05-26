@@ -12,7 +12,6 @@ import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-
 // 1) HttpClient
 val networkModule = module {
     single {
