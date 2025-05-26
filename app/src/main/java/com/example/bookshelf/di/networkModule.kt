@@ -3,6 +3,7 @@ package com.example.bookshelf.di
 import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.data.KtorBookshelfRepository
 import com.example.bookshelf.network.KtorBookshelfService
+import com.example.bookshelf.screens.detailScreen.DetailsViewModel
 import com.example.bookshelf.screens.queryScreen.SearchViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -36,6 +37,7 @@ val repositoryModule = module {
 // 4) ViewModel
 val viewModelModule = module {
     viewModel { SearchViewModel(get()) }
+    viewModel { DetailsViewModel(get()) }
 }
 
 // تجميع كل الوحدات

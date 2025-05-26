@@ -1,17 +1,13 @@
 package com.example.bookshelf.screens.detailScreen
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.bookshelf.BookshelfApplication
+import coil3.network.HttpException
 import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.screens.components.BookUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import java.io.IOException
 
 class DetailsViewModel(private val bookshelfRepository: BooksRepository) : ViewModel() {
@@ -31,17 +27,6 @@ class DetailsViewModel(private val bookshelfRepository: BooksRepository) : ViewM
             } catch (e: HttpException) {
                 e.printStackTrace()
                 BookUiState.Error
-            }
-        }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication)
-                val bookshelfRepository = application.container.bookshelfRepository
-                DetailsViewModel(bookshelfRepository = bookshelfRepository)
             }
         }
     }
