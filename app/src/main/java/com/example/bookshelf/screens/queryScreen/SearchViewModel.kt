@@ -1,15 +1,14 @@
 package com.example.bookshelf.screens.queryScreen
 
+import android.net.http.HttpException
+import android.os.Build
+import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.bookshelf.BookshelfApplication
 import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.screens.components.BookUiState
@@ -18,8 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okio.IOException
-import retrofit2.HttpException
+import kotlinx.io.IOException
 
 class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<BookUiState>(BookUiState.Loading)
@@ -58,6 +56,7 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
             )
         }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun getBooks(query: String = "") {
         updateSearchState(searchStarted = true)
 
@@ -76,17 +75,6 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
             } catch (e: HttpException) {
                 _uiState.value = BookUiState.Error
                 e.printStackTrace()
-            }
-        }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BookshelfApplication)
-                val bookshelfRepository = application.container.bookshelfRepository
-                SearchViewModel(booksRepository = bookshelfRepository)
             }
         }
     }
