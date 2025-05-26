@@ -65,6 +65,16 @@ dependencies {
     implementation(libs.kotlinx.serialization.core.jvm)
     implementation(libs.kotlin.stdlib.jdk8)
 
+    // Ktor Client
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
     // Networking
     implementation(libs.retrofit)
     implementation(libs.okhttp)
@@ -75,6 +85,7 @@ dependencies {
     // Images
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.firebase.crashlytics.buildtools)
 
     // Testing
     testImplementation(libs.junit)
