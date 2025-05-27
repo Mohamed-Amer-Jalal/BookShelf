@@ -1,8 +1,6 @@
 package com.example.bookshelf.screens.queryScreen
 
 import android.net.http.HttpException
-import android.os.Build
-import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +54,6 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
             )
         }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun getBooks(query: String = "") {
         updateSearchState(searchStarted = true)
 
