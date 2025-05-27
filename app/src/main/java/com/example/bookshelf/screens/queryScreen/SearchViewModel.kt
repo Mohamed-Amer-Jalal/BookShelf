@@ -1,12 +1,12 @@
 package com.example.bookshelf.screens.queryScreen
 
-import android.net.http.HttpException
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.network.HttpException
 import com.example.bookshelf.data.BooksRepository
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.screens.components.BookUiState
