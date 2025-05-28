@@ -3,7 +3,6 @@ package com.example.bookshelf.screens.queryScreen
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,7 +46,6 @@ fun GridList(
     bookshelfList: List<Book>?,
     modifier: Modifier = Modifier,
     onDetailsClick: (Book) -> Unit,
-    contentPadding: PaddingValues = PaddingValues(24.dp)
 ) {
     if (bookshelfList.isNullOrEmpty()) NothingFoundScreen()
     else {
@@ -55,7 +53,6 @@ fun GridList(
             columns = GridCells.Adaptive(150.dp),
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = contentPadding
         ) {
             items(bookshelfList) { book ->
                 GridItem(

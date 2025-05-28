@@ -30,10 +30,9 @@ class SearchViewModel(private val booksRepository: BooksRepository) : ViewModel(
     private val _favoriteBooks = mutableStateListOf<Book>()
     val favoriteBooks: List<Book> get() = _favoriteBooks
 
-    var favoritesUiState: BookUiState by mutableStateOf(BookUiState.Loading)
-        private set
+    private var favoritesUiState: BookUiState by mutableStateOf(BookUiState.Loading)
 
-    fun isBookFavorite(book: Book): Boolean = _favoriteBooks.any { it.id == book.id }
+    private fun isBookFavorite(book: Book): Boolean = _favoriteBooks.any { it.id == book.id }
 
     fun toggleFavorite(book: Book) {
         if (isBookFavorite(book)) _favoriteBooks.removeAll { it.id == book.id }

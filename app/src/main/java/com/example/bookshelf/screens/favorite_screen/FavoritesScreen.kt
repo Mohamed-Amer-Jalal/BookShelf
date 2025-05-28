@@ -18,7 +18,7 @@ fun FavoritesScreen(
     onBack: () -> Boolean
 ) {
     Column {
-        if (!viewModel.favoriteBooks.isEmpty()) {
+        if (viewModel.favoriteBooks.isNotEmpty()) {
             when (bookshelfUiState) {
                 is BookUiState.Loading -> LoadingScreen(modifier = modifier)
 

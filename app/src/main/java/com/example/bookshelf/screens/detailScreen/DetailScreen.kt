@@ -33,9 +33,8 @@ fun DetailScreen(
     viewModel: DetailsViewModel,
     retryAction: () -> Unit,
 ) {
-    val uiStateDet = viewModel.uiStateDetail.collectAsState().value
+    when (val uiStateDet = viewModel.uiStateDetail.collectAsState().value) {
 
-    when (uiStateDet) {
         is BookUiState.Loading -> LoadingScreen()
 
         is BookUiState.DetailsSuccess -> BookDetails(uiStateDet.book)
