@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.material3.adaptive.navigation.suite.android)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.appcompat.resources)
 
     // Kotlin
     implementation(libs.kotlinx.coroutines.core)
@@ -76,6 +78,10 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose.navigation)
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger.slf4j)
+
 
     // Image
     implementation(libs.coil3.coil.compose)
@@ -88,5 +94,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.koin.androidx.compose)
 }
