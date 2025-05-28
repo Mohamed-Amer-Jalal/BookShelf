@@ -69,6 +69,7 @@ dependencies {
 
     // Ktor Client
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.darwin)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)
@@ -81,7 +82,6 @@ dependencies {
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
-
 
     // Image
     implementation(libs.coil3.coil.compose)
